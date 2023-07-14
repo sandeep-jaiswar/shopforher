@@ -17,9 +17,7 @@ export async function GET(request: Request) {
 
   let json_response = {
     status: "success",
-    data: {
-      category: result,
-    },
+    data: result,
   };
   return NextResponse.json(json_response);
 }

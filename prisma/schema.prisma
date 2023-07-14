@@ -20,3 +20,9 @@ model Product {
   category Category  @relation(fields: [cid], references: [id])
   cid      String    @db.ObjectId
 }
+
+model Image {
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  src      String
+  alt       String
+}

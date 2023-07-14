@@ -5,7 +5,7 @@ import { SearchBar } from '../molecules/search-bar'
 
 function Header() {
   return (
-    <div className='flex p-4 shadow-2xl align-middle items-center justify-between'>
+    <div className='flex p-4 shadow-2xl align-middle items-center justify-between w-full z-50 backdrop-blur-3xl'>
       <ShopLogo />
       <SearchBar/>
       <HeaderNavLink />

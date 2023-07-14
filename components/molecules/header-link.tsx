@@ -11,32 +11,33 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { useAppSelector, useAppDispatch } from "@/redux/hooks";
+import { useGetCategoryQuery } from "@/redux/services/cmsApi";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function HeaderNavLink() {
+  const { isLoading, isFetching, data = [], error } = useGetCategoryQuery(null);
+  if (isLoading || isFetching) {
+    return (
+      <div className="flex space-x-4">
+        <Skeleton className="h-4 w-[100px]" />
+        <Skeleton className="h-4 w-[100px]" />
+        <Skeleton className="h-4 w-[100px]" />
+      </div>
+    );
+  }
   return (
     <NavigationMenu>
       <NavigationMenuList>
-        <NavigationMenuItem>
-          <Link href="/clothing" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Clothing
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link href="/accessories" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Accessories
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link href="/shoes" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Shoes
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
+        {data.map((item, index) => (
+          <NavigationMenuItem key={item.cname}>
+            <Link href={`/${item.cname}`} legacyBehavior passHref>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                {item.cname}
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+        ))}
       </NavigationMenuList>
     </NavigationMenu>
   );

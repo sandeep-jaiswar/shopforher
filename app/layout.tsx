@@ -2,6 +2,7 @@ import Header from "@/components/organisms/header";
 import "./globals.scss";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Providers } from "@/redux/provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,11 +17,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Header />
-        {children}
-      </body>
-    </html>
+    <Providers>
+      <html lang="en">
+        <body className={`${inter.className} flex flex-col`}>
+          <Header />
+          <main id="main-content" className="flex flex-col justify-between">
+            {children}
+          </main>
+        </body>
+      </html>
+    </Providers>
   );
 }
