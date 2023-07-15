@@ -6,17 +6,17 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const id = params.id;
-  const feedback = await prisma.product.findUnique({
+  const brand = await prisma.brand.findUnique({
     where: {
       id,
     },
     include: { image: true },
   });
 
-  if (!feedback) {
+  if (!brand) {
     let error_response = {
       status: "fail",
-      message: "No Feedback with the Provided ID Found",
+      message: "No brand with the Provided ID Found",
     };
     return new NextResponse(JSON.stringify(error_response), {
       status: 404,
@@ -26,9 +26,7 @@ export async function GET(
 
   let json_response = {
     status: "success",
-    data: {
-      feedback,
-    },
+    data: brand,
   };
   return NextResponse.json(json_response);
 }
@@ -41,7 +39,7 @@ export async function PATCH(
     const id = params.id;
     let json = await request.json();
 
-    const updated_feedback = await prisma.product.update({
+    const updated_brand = await prisma.brand.update({
       where: { id },
       data: json,
     });
@@ -49,7 +47,7 @@ export async function PATCH(
     let json_response = {
       status: "success",
       data: {
-        feedback: updated_feedback,
+        brand: updated_brand,
       },
     };
     return NextResponse.json(json_response);
@@ -57,7 +55,7 @@ export async function PATCH(
     if (error.code === "P2025") {
       let error_response = {
         status: "fail",
-        message: "No Feedback with the Provided ID Found",
+        message: "No brand with the Provided ID Found",
       };
       return new NextResponse(JSON.stringify(error_response), {
         status: 404,
@@ -82,7 +80,7 @@ export async function DELETE(
 ) {
   try {
     const id = params.id;
-    await prisma.product.delete({
+    await prisma.brand.delete({
       where: { id },
     });
 
@@ -91,7 +89,7 @@ export async function DELETE(
     if (error.code === "P2025") {
       let error_response = {
         status: "fail",
-        message: "No Feedback with the Provided ID Found",
+        message: "No brand with the Provided ID Found",
       };
       return new NextResponse(JSON.stringify(error_response), {
         status: 404,

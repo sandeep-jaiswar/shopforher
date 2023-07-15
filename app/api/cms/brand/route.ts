@@ -2,14 +2,14 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
-  const feedback = await prisma.product.findMany({
+  const result = await prisma.brand.findMany({
     include: { image: true },
   });
 
-  if (!feedback) {
+  if (!result) {
     let error_response = {
       status: "fail",
-      message: "No Feedback with the Provided ID Found",
+      message: "No result with the Provided ID Found",
     };
     return new NextResponse(JSON.stringify(error_response), {
       status: 404,
@@ -19,23 +19,21 @@ export async function GET(request: Request) {
 
   let json_response = {
     status: "success",
-    data: {
-      product: feedback,
-    },
+    data: result,
   };
   return NextResponse.json(json_response);
 }
 
 export async function POST(request: Request) {
   let json = await request.json();
-  const feedback = await prisma.product.create({
+  const result = await prisma.brand.create({
     data: json
   });
 
-  if (!feedback) {
+  if (!result) {
     let error_response = {
       status: "fail",
-      message: "No Feedback with the Provided ID Found",
+      message: "No result with the Provided ID Found",
     };
     return new NextResponse(JSON.stringify(error_response), {
       status: 404,
@@ -46,7 +44,7 @@ export async function POST(request: Request) {
   let json_response = {
     status: "success",
     data: {
-      product: feedback,
+      brand: result,
     },
   };
   return NextResponse.json(json_response);

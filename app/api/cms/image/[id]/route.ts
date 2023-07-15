@@ -6,11 +6,10 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const id = params.id;
-  const feedback = await prisma.product.findUnique({
+  const feedback = await prisma.image.findUnique({
     where: {
       id,
     },
-    include: { image: true },
   });
 
   if (!feedback) {
@@ -41,7 +40,7 @@ export async function PATCH(
     const id = params.id;
     let json = await request.json();
 
-    const updated_feedback = await prisma.product.update({
+    const updated_feedback = await prisma.image.update({
       where: { id },
       data: json,
     });
@@ -82,7 +81,7 @@ export async function DELETE(
 ) {
   try {
     const id = params.id;
-    await prisma.product.delete({
+    await prisma.image.delete({
       where: { id },
     });
 

@@ -12,6 +12,11 @@ type Product = {
   cid: string
 }
 
+type Brand = {
+  id: number;
+  bname: string;
+}
+
 type GetDataResponse<T> = {
   data: T[]
   status: string
@@ -45,6 +50,14 @@ export const cmsApi = createApi({
       query: ({ id }) => `/cms/product/${id}`,
       transformResponse: (response : GetDataByIdResponse<Product>) => response.data,
     }),
+    getBrand: builder.query<Brand[], null>({
+      query: () => "/cms/brand",
+      transformResponse: (response : GetDataResponse<Brand>) => response.data,
+    }),
+    getBrandById: builder.query<Brand, { id: string }>({
+      query: ({ id }) => `/cms/brand/${id}`,
+      transformResponse: (response : GetDataByIdResponse<Brand>) => response.data,
+    }),
   }),
 });
 
@@ -53,4 +66,6 @@ export const {
   useGetCategoryByIdQuery,
   useGetProductQuery,
   useGetProductByIdQuery,
+  useGetBrandQuery,
+  useGetBrandByIdQuery,
 } = cmsApi;
