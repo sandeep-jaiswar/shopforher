@@ -1,5 +1,5 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, PutObjectCommandInput, GetObjectCommandInput, GetObjectCommandOutput } from "@aws-sdk/client-s3";
-
+import { S3Client, PutObjectCommand, GetObjectCommand, PutObjectCommandInput, GetObjectCommandInput, GetObjectCommandOutput, AbortMultipartUploadCommandOutput, CompleteMultipartUploadCommandOutput } from "@aws-sdk/client-s3";
+import {Upload } from "@aws-sdk/lib-storage";
 type UploadedObjectRes = {
   signedRequest: {
     Location: string;
@@ -28,24 +28,25 @@ class S3Singleton {
     return S3Singleton.instance;
   }
 
-  public async uploadObject(params: PutObjectCommandInput): Promise<UploadedObjectRes> {
-    return new Promise((resolve, reject) => {
-      this.s3Client.send(new PutObjectCommand(params), (err: any, data: any) => {
-        if (err) {
-          reject(err);
-        }
-        const returnData: UploadedObjectRes = {
-          signedRequest: {
-            Location: data.Location,
-          },
-        };
-        resolve(returnData);
+  public async uploadObject(params: PutObjectCommandInput):Promise<AbortMultipartUploadCommandOutput | CompleteMultipartUploadCommandOutput>{
+    try {
+      const upload = new Upload({
+        client: this.s3Client,
+        params,
       });
-    });
+      const data = upload.done();
+      return data;
+    } catch (err) {
+      throw err;
+    }
   }
 
   public async getObject(params: GetObjectCommandInput): Promise<GetObjectCommandOutput> {
-    return this.s3Client.send(new GetObjectCommand(params));
+    try {
+      return await this.s3Client.send(new GetObjectCommand(params));
+    } catch (err) {
+      throw err;
+    }
   }
 }
 

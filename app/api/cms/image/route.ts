@@ -1,10 +1,6 @@
 import mime from "mime";
-import { join } from "path";
-import { stat, mkdir, writeFile, rmdir } from "fs/promises";
-import * as dateFn from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 import S3Singleton from "@/lib/s3";
-import fs from "fs";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
@@ -19,25 +15,6 @@ export async function POST(request: NextRequest) {
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());
-  const relativeUploadDir = `/uploads/${dateFn.format(Date.now(), "dd-MM-Y")}`;
-  const uploadDir = join(process.cwd(), "public", relativeUploadDir);
-
-  try {
-    await stat(uploadDir);
-  } catch (e: any) {
-    if (e.code === "ENOENT") {
-      await mkdir(uploadDir, { recursive: true });
-    } else {
-      console.error(
-        "Error while trying to create directory when uploading a file\n",
-        e
-      );
-      return NextResponse.json(
-        { error: "Something went wrong." },
-        { status: 500 }
-      );
-    }
-  }
 
   try {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
@@ -45,23 +22,21 @@ export async function POST(request: NextRequest) {
       /\.[^/.]+$/,
       ""
     )}-${uniqueSuffix}.${mime.getExtension(file.type)}`;
-    await writeFile(`${uploadDir}/${filename}`, buffer);
 
     const params = {
       Bucket: "genericapi",
       Key: filename,
-      Body: fs.createReadStream(`${uploadDir}/${filename}`),
+      Body: buffer,
       ACL: "public-read",
       ContentType: "image/jpg, image/png, image/jpeg",
     };
 
-    const { signedRequest } = await S3Singleton.getInstance().uploadObject(
+    const data: any = await S3Singleton.getInstance().uploadObject(
       params
     );
-    await rmdir(uploadDir, { recursive: true });
     const uploadedImage = await prisma.image.create({
       data: {
-        src: signedRequest.Location,
+        src: data?.Location,
         alt: filename,
       },
     });
